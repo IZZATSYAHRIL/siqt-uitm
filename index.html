@@ -209,7 +209,7 @@ textarea { min-height: 80px; resize: vertical; }
         </svg>
         Log Masuk dengan Google
       </button>
-      <div><span class="domain-note"><i class="ti ti-shield-check" style="font-size:12px"></i> @uitm.edu.my sahaja</span></div>
+      <div><span class="domain-note"><i class="ti ti-shield-check" style="font-size:12px"></i>@uitm.edu.my atau @student.uitm.edu.my</span></div>
     </div>
 
     <div class="page active" id="pg-dashboard">
@@ -410,14 +410,25 @@ let currentUser = null;
 let allRecords = [];
 
 function showPage(id, tabIdx) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  if (!currentUser) return; // Jangan boleh tukar page kalau belum login
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
   document.querySelectorAll('.nav-tab').forEach((b,i) => b.classList.toggle('active', i === tabIdx));
-  document.getElementById('pg-' + id).classList.add('active');
-  if (id === 'rekod' && currentUser) loadRecords();
-  if (id === 'dashboard' && currentUser) loadDashboard();
+  const targetPage = document.getElementById('pg-' + id);
+  targetPage.classList.add('active');
+  targetPage.style.display = '';
+  if (id === 'rekod') loadRecords();
+  if (id === 'dashboard') loadDashboard();
 }
 
 window.onload = function() {
+  // Tunjuk lock screen, sembunyi content sebelum login
+  document.getElementById('lockScreen').style.display = '';
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  document.querySelector('.nav').style.display = 'none';
+  
   document.getElementById('msgDomain').classList.add('show');
   const today = new Date().toISOString().split('T')[0];
   const df = document.getElementById('f-tarikh');
@@ -486,7 +497,13 @@ function setUser(user) {
   document.getElementById('authLabel').textContent = user.email;
   document.getElementById('btnSignIn').style.display = 'none';
   document.getElementById('btnSignOut').style.display = '';
+  
+  // Sembunyi lock screen, tunjuk portal content
   document.getElementById('lockScreen').style.display = 'none';
+  document.querySelector('.nav').style.display = '';
+  document.getElementById('pg-dashboard').style.display = '';
+  document.getElementById('pg-dashboard').classList.add('active');
+  
   const emailField = document.getElementById('f-emel');
   if (emailField) emailField.value = user.email;
   const namaField = document.getElementById('f-nama');
@@ -494,18 +511,7 @@ function setUser(user) {
   document.getElementById('msgDomain').classList.remove('show');
   loadDashboard();
 }
-
-function signOut() {
-  currentUser = null;
-  document.getElementById('authBadge').classList.remove('signed-in');
-  document.getElementById('authLabel').textContent = 'Tidak log masuk';
-  document.getElementById('btnSignIn').style.display = '';
-  document.getElementById('btnSignOut').style.display = 'none';
-  document.getElementById('msgDomain').classList.add('show');
-  if (typeof google !== 'undefined' && google.accounts) {
-    google.accounts.id.disableAutoSelect();
-  }
-}
+function signOut
 
 function parseJwt(token) {
   const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
