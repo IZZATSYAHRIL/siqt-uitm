@@ -402,7 +402,7 @@ textarea { min-height: 80px; resize: vertical; }
 const CONFIG = {
   CLIENT_ID: '488159901582-kr8c7el481k27380vgk02nfdk4deqip2.apps.googleusercontent.com',
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbx7OKYSDnmtuwbokTZyo9sGMHYLvV-dmh9CRljjOPP9vJLr6KeApY0sSD_nQK8_tdYR8Q/exec',
-  ALLOWED_DOMAIN: 'uitm.edu.my',
+  ALLOWED_DOMAINS: ['uitm.edu.my', 'student.uitm.edu.my'],
   YEAR: new Date().getFullYear()
 };
 
@@ -469,8 +469,11 @@ function validateAndSetUser(info) {
     alert('Gagal mendapatkan emel. Sila cuba lagi.');
     return;
   }
-  if (!info.email.endsWith('@' + CONFIG.ALLOWED_DOMAIN)) {
-    alert('⛔ Akses ditolak.\n\nEmel anda: ' + info.email + '\nDibenarkan: @' + CONFIG.ALLOWED_DOMAIN + ' sahaja');
+  const allowed = CONFIG.ALLOWED_DOMAINS || [CONFIG.ALLOWED_DOMAIN];
+  const emailLower = info.email.toLowerCase();
+  const isAllowed = allowed.some(d => emailLower.endsWith('@' + d));
+  if (!isAllowed) {
+    alert('⛔ Akses ditolak.\n\nEmel anda: ' + info.email + '\nDibenarkan: ' + allowed.map(d => '@' + d).join(' atau '));
     signOut();
     return;
   }
