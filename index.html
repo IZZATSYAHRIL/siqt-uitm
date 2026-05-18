@@ -147,6 +147,7 @@ textarea { min-height: 80px; resize: vertical; }
 .mono { font-family: var(--font-mono); font-size: 11.5px; color: var(--c-text2); }
 .portal-footer { border-top: 1px solid var(--c-border); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--c-text3); flex-wrap: wrap; gap: 8px; }
 .footer-brand { font-weight: 600; color: var(--c-brand); }
+.nav.hidden, .content-wrap.hidden { display: none !important; }
 @media (max-width: 720px) {
   body { padding: 0; }
   .portal { border-radius: 0; }
@@ -187,7 +188,7 @@ textarea { min-height: 80px; resize: vertical; }
         </button>
       </div>
     </div>
-    <nav class="nav">
+    <nav class="nav hidden" id="mainNav">
       <button class="nav-tab active" onclick="showPage('dashboard',0)"><i class="ti ti-layout-dashboard"></i><span>Papan Pemuka</span></button>
       <button class="nav-tab" onclick="showPage('upload',1)"><i class="ti ti-upload"></i><span>Hantar Audit</span></button>
       <button class="nav-tab" onclick="showPage('rekod',2)"><i class="ti ti-table"></i><span>Rekod</span></button>
@@ -196,10 +197,10 @@ textarea { min-height: 80px; resize: vertical; }
   </div>
 
   <div class="content">
-    <div id="lockScreen" class="lock-screen" style="display:none">
+    <div id="lockScreen" class="lock-screen">
       <div class="lock-icon"><i class="ti ti-lock"></i></div>
       <h2>Log Masuk Diperlukan</h2>
-      <p>Portal ini terhad kepada warga UiTM. Sila log masuk dengan akaun Google rasmi anda.</p>
+      <p>Portal ini terhad kepada warga UiTM sahaja. Sila log masuk menggunakan akaun Google rasmi UiTM anda.</p>
       <button class="btn-google" onclick="signIn()">
         <svg width="18" height="18" viewBox="0 0 48 48">
           <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -209,190 +210,188 @@ textarea { min-height: 80px; resize: vertical; }
         </svg>
         Log Masuk dengan Google
       </button>
-      <div><span class="domain-note"><i class="ti ti-shield-check" style="font-size:12px"></i>@uitm.edu.my atau @student.uitm.edu.my</span></div>
+      <div><span class="domain-note"><i class="ti ti-shield-check" style="font-size:12px"></i> @uitm.edu.my atau @student.uitm.edu.my</span></div>
     </div>
 
-    <div class="page active" id="pg-dashboard">
-      <div class="stats-row">
-        <div class="stat-card" style="--accent:#C45E0A;--accent-lt:#FDF0E6">
-          <div class="stat-icon"><i class="ti ti-file-check"></i></div>
-          <div class="stat-num" id="stat-total">—</div>
-          <div class="stat-lbl">Jumlah Audit</div>
-        </div>
-        <div class="stat-card" style="--accent:#2A6041;--accent-lt:#E8F3EC">
-          <div class="stat-icon" style="color:#2A6041;background:#E8F3EC"><i class="ti ti-circle-check"></i></div>
-          <div class="stat-num" id="stat-done">—</div>
-          <div class="stat-lbl">Selesai</div>
-        </div>
-        <div class="stat-card" style="--accent:#7A4A0A;--accent-lt:#FDF3E3">
-          <div class="stat-icon" style="color:#7A4A0A;background:#FDF3E3"><i class="ti ti-clock"></i></div>
-          <div class="stat-num" id="stat-prog">—</div>
-          <div class="stat-lbl">Dalam Proses</div>
-        </div>
-        <div class="stat-card" style="--accent:#8B2020;--accent-lt:#FDECEC">
-          <div class="stat-icon" style="color:#8B2020;background:#FDECEC"><i class="ti ti-hourglass"></i></div>
-          <div class="stat-num" id="stat-pend">—</div>
-          <div class="stat-lbl">Belum Mula</div>
-        </div>
-      </div>
-      <div class="chart-section">
-        <div class="section-hd"><div class="section-title"><i class="ti ti-chart-bar"></i> Audit Mengikut Fakulti</div></div>
-        <div id="chartBars">
-          <div style="text-align:center;padding:24px;color:var(--c-text3);font-size:13px">Log masuk untuk lihat data</div>
-        </div>
-      </div>
-      <div class="section-hd"><div class="section-title"><i class="ti ti-clock-hour-4"></i> Audit Terkini</div></div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>No. Rujukan</th><th>Juruaudit</th><th>Fakulti</th><th>Jenis</th><th>Tarikh</th><th>Status</th></tr></thead>
-          <tbody id="recentTbody">
-            <tr class="loading-row"><td colspan="6">Log masuk untuk lihat data</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="page" id="pg-upload">
-      <div class="steps">
-        <div class="step active" id="step1"><div class="step-num"><span>1</span></div> Maklumat Audit</div>
-        <div class="step" id="step2"><div class="step-num"><span>2</span></div> Muat Naik PDF</div>
-        <div class="step" id="step3"><div class="step-num"><span>3</span></div> Pengesahan</div>
-      </div>
-      <div class="msg msg-info" id="msgDomain">
-        <i class="ti ti-info-circle"></i>
-        <div class="msg-body"><div class="msg-title">Perlu log masuk</div><div class="msg-desc">Sila log masuk dengan akaun @uitm.edu.my sebelum menghantar audit.</div></div>
-      </div>
-      <div class="msg msg-success" id="msgSuccess">
-        <i class="ti ti-circle-check"></i>
-        <div class="msg-body"><div class="msg-title">Berjaya dihantar!</div><div class="msg-desc" id="msgSuccessDesc">Rekod audit telah disimpan.</div></div>
-      </div>
-      <div class="msg msg-error" id="msgError">
-        <i class="ti ti-alert-circle"></i>
-        <div class="msg-body"><div class="msg-title">Ralat</div><div class="msg-desc" id="msgErrorDesc">Sila cuba lagi.</div></div>
-      </div>
-      <div class="progress-wrap" id="progressWrap">
-        <div class="progress-label"><span id="progressLbl">Memuat naik...</span><span id="progressPct">0%</span></div>
-        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      </div>
-      <form id="auditForm" onsubmit="return false;">
-        <div class="form-card">
-          <div class="form-card-title"><i class="ti ti-user"></i> Maklumat Juruaudit</div>
-          <div class="form-grid">
-            <div class="fg"><label class="form-label">Nama Juruaudit <span class="req">*</span></label><input type="text" id="f-nama" placeholder="Nama penuh"></div>
-            <div class="fg"><label class="form-label">No. Pekerja <span class="req">*</span></label><input type="text" id="f-nokp" placeholder="cth: 2024123456"></div>
-            <div class="fg"><label class="form-label">Emel UiTM <span class="req">*</span></label><input type="email" id="f-emel" placeholder="nama@uitm.edu.my" readonly></div>
-            <div class="fg"><label class="form-label">Jawatan</label><input type="text" id="f-jawatan" placeholder="cth: Pensyarah"></div>
+    <div class="content-wrap hidden" id="contentWrap">
+      <div class="page active" id="pg-dashboard">
+        <div class="stats-row">
+          <div class="stat-card" style="--accent:#C45E0A;--accent-lt:#FDF0E6">
+            <div class="stat-icon"><i class="ti ti-file-check"></i></div>
+            <div class="stat-num" id="stat-total">—</div>
+            <div class="stat-lbl">Jumlah Audit</div>
+          </div>
+          <div class="stat-card" style="--accent:#2A6041;--accent-lt:#E8F3EC">
+            <div class="stat-icon" style="color:#2A6041;background:#E8F3EC"><i class="ti ti-circle-check"></i></div>
+            <div class="stat-num" id="stat-done">—</div>
+            <div class="stat-lbl">Selesai</div>
+          </div>
+          <div class="stat-card" style="--accent:#7A4A0A;--accent-lt:#FDF3E3">
+            <div class="stat-icon" style="color:#7A4A0A;background:#FDF3E3"><i class="ti ti-clock"></i></div>
+            <div class="stat-num" id="stat-prog">—</div>
+            <div class="stat-lbl">Dalam Proses</div>
+          </div>
+          <div class="stat-card" style="--accent:#8B2020;--accent-lt:#FDECEC">
+            <div class="stat-icon" style="color:#8B2020;background:#FDECEC"><i class="ti ti-hourglass"></i></div>
+            <div class="stat-num" id="stat-pend">—</div>
+            <div class="stat-lbl">Belum Mula</div>
           </div>
         </div>
-        <div class="form-card">
-          <div class="form-card-title"><i class="ti ti-clipboard-list"></i> Maklumat Audit</div>
-          <div class="form-grid">
-            <div class="fg"><label class="form-label">Fakulti / Bahagian <span class="req">*</span></label>
-              <select id="f-fakulti">
-                <option value="">-- Pilih Fakulti --</option>
-                <option>Fakulti Sains Komputer &amp; Matematik</option>
-                <option>Fakulti Sains Pentadbiran &amp; Pengajian Polisi</option>
-                <option>Fakulti Perniagaan &amp; Pengurusan</option>
-                <option>Fakulti Kejuruteraan</option>
-                <option>Fakulti Seni Bina, Perancangan &amp; Ukur</option>
-                <option>Fakulti Undang-undang</option>
-                <option>Fakulti Pendidikan</option>
-                <option>Pejabat Pendaftar</option>
-                <option>Pejabat Bendahari</option>
-                <option>Bahagian Hal Ehwal Akademik</option>
-                <option>Lain-lain</option>
-              </select>
+        <div class="chart-section">
+          <div class="section-hd"><div class="section-title"><i class="ti ti-chart-bar"></i> Audit Mengikut Fakulti</div></div>
+          <div id="chartBars">
+            <div style="text-align:center;padding:24px;color:var(--c-text3);font-size:13px"><span class="spinner"></span> Memuatkan...</div>
+          </div>
+        </div>
+        <div class="section-hd"><div class="section-title"><i class="ti ti-clock-hour-4"></i> Audit Terkini</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>No. Rujukan</th><th>Juruaudit</th><th>Fakulti</th><th>Jenis</th><th>Tarikh</th><th>Status</th></tr></thead>
+            <tbody id="recentTbody">
+              <tr class="loading-row"><td colspan="6"><span class="spinner"></span> Memuatkan...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="page" id="pg-upload">
+        <div class="steps">
+          <div class="step active" id="step1"><div class="step-num"><span>1</span></div> Maklumat Audit</div>
+          <div class="step" id="step2"><div class="step-num"><span>2</span></div> Muat Naik PDF</div>
+          <div class="step" id="step3"><div class="step-num"><span>3</span></div> Pengesahan</div>
+        </div>
+        <div class="msg msg-success" id="msgSuccess">
+          <i class="ti ti-circle-check"></i>
+          <div class="msg-body"><div class="msg-title">Berjaya dihantar!</div><div class="msg-desc" id="msgSuccessDesc">Rekod audit telah disimpan.</div></div>
+        </div>
+        <div class="msg msg-error" id="msgError">
+          <i class="ti ti-alert-circle"></i>
+          <div class="msg-body"><div class="msg-title">Ralat</div><div class="msg-desc" id="msgErrorDesc">Sila cuba lagi.</div></div>
+        </div>
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-label"><span id="progressLbl">Memuat naik...</span><span id="progressPct">0%</span></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <form id="auditForm" onsubmit="return false;">
+          <div class="form-card">
+            <div class="form-card-title"><i class="ti ti-user"></i> Maklumat Juruaudit</div>
+            <div class="form-grid">
+              <div class="fg"><label class="form-label">Nama Juruaudit <span class="req">*</span></label><input type="text" id="f-nama" placeholder="Nama penuh"></div>
+              <div class="fg"><label class="form-label">No. Pekerja <span class="req">*</span></label><input type="text" id="f-nokp" placeholder="cth: 2024123456"></div>
+              <div class="fg"><label class="form-label">Emel UiTM <span class="req">*</span></label><input type="email" id="f-emel" placeholder="nama@uitm.edu.my" readonly></div>
+              <div class="fg"><label class="form-label">Jawatan</label><input type="text" id="f-jawatan" placeholder="cth: Pensyarah"></div>
             </div>
-            <div class="fg"><label class="form-label">Jabatan</label><input type="text" id="f-jabatan" placeholder="cth: Jabatan Kimia"></div>
-            <div class="fg"><label class="form-label">Jenis Audit <span class="req">*</span></label>
-              <select id="f-jenis">
-                <option value="">-- Pilih Jenis --</option>
-                <option>Audit Akademik</option>
-                <option>Audit Kewangan</option>
-                <option>Audit Pengurusan</option>
-                <option>Audit Dalaman</option>
-                <option>Audit Persijilan ISO</option>
-              </select>
+          </div>
+          <div class="form-card">
+            <div class="form-card-title"><i class="ti ti-clipboard-list"></i> Maklumat Audit</div>
+            <div class="form-grid">
+              <div class="fg"><label class="form-label">Fakulti / Bahagian <span class="req">*</span></label>
+                <select id="f-fakulti">
+                  <option value="">-- Pilih Fakulti --</option>
+                  <option>Fakulti Sains Komputer &amp; Matematik</option>
+                  <option>Fakulti Sains Pentadbiran &amp; Pengajian Polisi</option>
+                  <option>Fakulti Perniagaan &amp; Pengurusan</option>
+                  <option>Fakulti Kejuruteraan</option>
+                  <option>Fakulti Seni Bina, Perancangan &amp; Ukur</option>
+                  <option>Fakulti Undang-undang</option>
+                  <option>Fakulti Pendidikan</option>
+                  <option>Pejabat Pendaftar</option>
+                  <option>Pejabat Bendahari</option>
+                  <option>Bahagian Hal Ehwal Akademik</option>
+                  <option>Lain-lain</option>
+                </select>
+              </div>
+              <div class="fg"><label class="form-label">Jabatan</label><input type="text" id="f-jabatan" placeholder="cth: Jabatan Kimia"></div>
+              <div class="fg"><label class="form-label">Jenis Audit <span class="req">*</span></label>
+                <select id="f-jenis">
+                  <option value="">-- Pilih Jenis --</option>
+                  <option>Audit Akademik</option>
+                  <option>Audit Kewangan</option>
+                  <option>Audit Pengurusan</option>
+                  <option>Audit Dalaman</option>
+                  <option>Audit Persijilan ISO</option>
+                </select>
+              </div>
+              <div class="fg"><label class="form-label">Tarikh Audit <span class="req">*</span></label><input type="date" id="f-tarikh"></div>
+              <div class="fg"><label class="form-label">Status Semasa <span class="req">*</span></label>
+                <select id="f-status">
+                  <option value="">-- Pilih Status --</option>
+                  <option>Selesai</option>
+                  <option>Dalam Proses</option>
+                  <option>Belum Mula</option>
+                </select>
+              </div>
+              <div class="fg"><label class="form-label">Penemuan Utama</label><input type="text" id="f-penemuan" placeholder="Ringkasan penemuan"></div>
+              <div class="fg full"><label class="form-label">Catatan Tambahan</label><textarea id="f-catatan" placeholder="Maklumat tambahan..."></textarea></div>
             </div>
-            <div class="fg"><label class="form-label">Tarikh Audit <span class="req">*</span></label><input type="date" id="f-tarikh"></div>
-            <div class="fg"><label class="form-label">Status Semasa <span class="req">*</span></label>
-              <select id="f-status">
-                <option value="">-- Pilih Status --</option>
-                <option>Selesai</option>
-                <option>Dalam Proses</option>
-                <option>Belum Mula</option>
-              </select>
+          </div>
+          <div class="form-card">
+            <div class="form-card-title"><i class="ti ti-file-upload"></i> Muat Naik Borang PDF</div>
+            <div class="upload-zone" id="uploadZone">
+              <input type="file" id="pdfInput" accept=".pdf" onchange="handleFile(this)">
+              <div class="upload-icon"><i class="ti ti-cloud-upload"></i></div>
+              <div class="upload-txt">Klik atau seret fail PDF ke sini</div>
+              <div class="upload-sub">Format: PDF · Saiz maksimum: 10MB</div>
             </div>
-            <div class="fg"><label class="form-label">Penemuan Utama</label><input type="text" id="f-penemuan" placeholder="Ringkasan penemuan"></div>
-            <div class="fg full"><label class="form-label">Catatan Tambahan</label><textarea id="f-catatan" placeholder="Maklumat tambahan..."></textarea></div>
+            <div class="file-selected" id="fileSelected">
+              <i class="ti ti-file-text" style="font-size:18px"></i>
+              <span id="fileName">—</span>
+            </div>
           </div>
-        </div>
-        <div class="form-card">
-          <div class="form-card-title"><i class="ti ti-file-upload"></i> Muat Naik Borang PDF</div>
-          <div class="upload-zone" id="uploadZone">
-            <input type="file" id="pdfInput" accept=".pdf" onchange="handleFile(this)">
-            <div class="upload-icon"><i class="ti ti-cloud-upload"></i></div>
-            <div class="upload-txt">Klik atau seret fail PDF ke sini</div>
-            <div class="upload-sub">Format: PDF · Saiz maksimum: 10MB</div>
-          </div>
-          <div class="file-selected" id="fileSelected">
-            <i class="ti ti-file-text" style="font-size:18px"></i>
-            <span id="fileName">—</span>
-          </div>
-        </div>
-        <button class="btn-submit" id="btnSubmit" onclick="submitAudit()">
-          <i class="ti ti-send"></i> Hantar Audit
-        </button>
-      </form>
-    </div>
-
-    <div class="page" id="pg-rekod">
-      <div class="filter-bar">
-        <input type="text" id="searchInput" placeholder="Cari nama / fakulti..." oninput="filterRecords()">
-        <select id="filterStatus" onchange="filterRecords()">
-          <option value="">Semua Status</option>
-          <option>Selesai</option>
-          <option>Dalam Proses</option>
-          <option>Belum Mula</option>
-        </select>
-        <select id="filterFakulti" onchange="filterRecords()">
-          <option value="">Semua Fakulti</option>
-          <option>Fakulti Sains Komputer &amp; Matematik</option>
-          <option>Fakulti Perniagaan &amp; Pengurusan</option>
-          <option>Fakulti Kejuruteraan</option>
-          <option>Fakulti Seni Bina, Perancangan &amp; Ukur</option>
-          <option>Fakulti Undang-undang</option>
-          <option>Fakulti Pendidikan</option>
-        </select>
-        <button class="btn-refresh" onclick="loadRecords()"><i class="ti ti-refresh"></i> Muat semula</button>
+          <button class="btn-submit" id="btnSubmit" onclick="submitAudit()">
+            <i class="ti ti-send"></i> Hantar Audit
+          </button>
+        </form>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>No. Rujukan</th><th>Juruaudit</th><th>Jabatan</th><th>Fakulti</th><th>Jenis</th><th>Tarikh</th><th>Status</th><th>Fail</th></tr></thead>
-          <tbody id="rekodTbody">
-            <tr class="loading-row"><td colspan="8">Log masuk untuk lihat rekod</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div style="font-size:11px;color:var(--c-text3);margin-top:8px;text-align:right" id="recordCount"></div>
-    </div>
 
-    <div class="page" id="pg-panduan">
-      <div class="section-hd" style="margin-bottom:18px"><div class="section-title"><i class="ti ti-book"></i> Panduan Pengguna</div></div>
-      <div class="guide-card"><div class="guide-num">1</div><div class="guide-body"><h3>Log Masuk dengan Akaun UiTM</h3><p>Klik <strong>Log Masuk</strong> di atas dan guna akaun rasmi UiTM (<em>@uitm.edu.my</em>).</p></div></div>
-      <div class="guide-card"><div class="guide-num">2</div><div class="guide-body"><h3>Sediakan Borang Audit PDF</h3><p>Pastikan borang lengkap diisi & ditandatangani. Format: <strong>PDF sahaja</strong>, maksimum 10MB.</p></div></div>
-      <div class="guide-card"><div class="guide-num">3</div><div class="guide-body"><h3>Isi &amp; Hantar Borang</h3><p>Tab <strong>Hantar Audit</strong> → lengkapkan medan (*) → muat naik PDF → klik <strong>Hantar</strong>.</p></div></div>
-      <div class="guide-card"><div class="guide-num">4</div><div class="guide-body"><h3>Semak Rekod</h3><p>Tab <strong>Rekod</strong> untuk lihat semua audit. Gunakan penapis untuk cari.</p></div></div>
-      <div class="contact-box">
-        <strong style="color:var(--c-text)">Hubungi Kami</strong><br>
-        Unit Kualiti &amp; Transformasi · UiTM Kampus Segamat · Johor
+      <div class="page" id="pg-rekod">
+        <div class="filter-bar">
+          <input type="text" id="searchInput" placeholder="Cari nama / fakulti..." oninput="filterRecords()">
+          <select id="filterStatus" onchange="filterRecords()">
+            <option value="">Semua Status</option>
+            <option>Selesai</option>
+            <option>Dalam Proses</option>
+            <option>Belum Mula</option>
+          </select>
+          <select id="filterFakulti" onchange="filterRecords()">
+            <option value="">Semua Fakulti</option>
+            <option>Fakulti Sains Komputer &amp; Matematik</option>
+            <option>Fakulti Perniagaan &amp; Pengurusan</option>
+            <option>Fakulti Kejuruteraan</option>
+            <option>Fakulti Seni Bina, Perancangan &amp; Ukur</option>
+            <option>Fakulti Undang-undang</option>
+            <option>Fakulti Pendidikan</option>
+          </select>
+          <button class="btn-refresh" onclick="loadRecords()"><i class="ti ti-refresh"></i> Muat semula</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>No. Rujukan</th><th>Juruaudit</th><th>Jabatan</th><th>Fakulti</th><th>Jenis</th><th>Tarikh</th><th>Status</th><th>Fail</th></tr></thead>
+            <tbody id="rekodTbody">
+              <tr class="loading-row"><td colspan="8"><span class="spinner"></span> Memuatkan...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:11px;color:var(--c-text3);margin-top:8px;text-align:right" id="recordCount"></div>
+      </div>
+
+      <div class="page" id="pg-panduan">
+        <div class="section-hd" style="margin-bottom:18px"><div class="section-title"><i class="ti ti-book"></i> Panduan Pengguna</div></div>
+        <div class="guide-card"><div class="guide-num">1</div><div class="guide-body"><h3>Log Masuk dengan Akaun UiTM</h3><p>Klik <strong>Log Masuk</strong> di atas dan guna akaun rasmi UiTM (<em>@uitm.edu.my atau @student.uitm.edu.my</em>).</p></div></div>
+        <div class="guide-card"><div class="guide-num">2</div><div class="guide-body"><h3>Sediakan Borang Audit PDF</h3><p>Pastikan borang lengkap diisi & ditandatangani. Format: <strong>PDF sahaja</strong>, maksimum 10MB.</p></div></div>
+        <div class="guide-card"><div class="guide-num">3</div><div class="guide-body"><h3>Isi &amp; Hantar Borang</h3><p>Tab <strong>Hantar Audit</strong> → lengkapkan medan (*) → muat naik PDF → klik <strong>Hantar</strong>.</p></div></div>
+        <div class="guide-card"><div class="guide-num">4</div><div class="guide-body"><h3>Semak Rekod</h3><p>Tab <strong>Rekod</strong> untuk lihat semua audit. Gunakan penapis untuk cari.</p></div></div>
+        <div class="contact-box">
+          <strong style="color:var(--c-text)">Hubungi Kami</strong><br>
+          Unit Kualiti &amp; Transformasi · UiTM Kampus Segamat · Johor
+        </div>
       </div>
     </div>
   </div>
 
   <div class="portal-footer">
     <span>© 2026 <span class="footer-brand">UiTM Kampus Segamat</span> · Unit Kualiti</span>
-    <span>Portal Audit v2.1</span>
+    <span>Portal Audit v2.2</span>
   </div>
 </div>
 
@@ -410,26 +409,20 @@ let currentUser = null;
 let allRecords = [];
 
 function showPage(id, tabIdx) {
-  if (!currentUser) return; // Jangan boleh tukar page kalau belum login
-  document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
-    p.style.display = 'none';
-  });
+  if (!currentUser) return;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach((b,i) => b.classList.toggle('active', i === tabIdx));
-  const targetPage = document.getElementById('pg-' + id);
-  targetPage.classList.add('active');
-  targetPage.style.display = '';
+  document.getElementById('pg-' + id).classList.add('active');
   if (id === 'rekod') loadRecords();
   if (id === 'dashboard') loadDashboard();
 }
 
 window.onload = function() {
-  // Tunjuk lock screen, sembunyi content sebelum login
+  // Default: tunjuk lock screen, sembunyi nav & content
   document.getElementById('lockScreen').style.display = '';
-  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-  document.querySelector('.nav').style.display = 'none';
+  document.getElementById('contentWrap').classList.add('hidden');
+  document.getElementById('mainNav').classList.add('hidden');
   
-  document.getElementById('msgDomain').classList.add('show');
   const today = new Date().toISOString().split('T')[0];
   const df = document.getElementById('f-tarikh');
   if (df) df.value = today;
@@ -498,20 +491,34 @@ function setUser(user) {
   document.getElementById('btnSignIn').style.display = 'none';
   document.getElementById('btnSignOut').style.display = '';
   
-  // Sembunyi lock screen, tunjuk portal content
+  // Sembunyi lock screen, tunjuk content & nav
   document.getElementById('lockScreen').style.display = 'none';
-  document.querySelector('.nav').style.display = '';
-  document.getElementById('pg-dashboard').style.display = '';
-  document.getElementById('pg-dashboard').classList.add('active');
+  document.getElementById('contentWrap').classList.remove('hidden');
+  document.getElementById('mainNav').classList.remove('hidden');
   
   const emailField = document.getElementById('f-emel');
   if (emailField) emailField.value = user.email;
   const namaField = document.getElementById('f-nama');
   if (namaField && !namaField.value) namaField.value = user.name || '';
-  document.getElementById('msgDomain').classList.remove('show');
   loadDashboard();
 }
-function signOut
+
+function signOut() {
+  currentUser = null;
+  document.getElementById('authBadge').classList.remove('signed-in');
+  document.getElementById('authLabel').textContent = 'Tidak log masuk';
+  document.getElementById('btnSignIn').style.display = '';
+  document.getElementById('btnSignOut').style.display = 'none';
+  
+  // Tunjuk lock screen balik, sembunyi content & nav
+  document.getElementById('lockScreen').style.display = '';
+  document.getElementById('contentWrap').classList.add('hidden');
+  document.getElementById('mainNav').classList.add('hidden');
+  
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.disableAutoSelect();
+  }
+}
 
 function parseJwt(token) {
   const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
