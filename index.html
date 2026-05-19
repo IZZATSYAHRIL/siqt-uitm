@@ -27,11 +27,11 @@ body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); 
 .portal { max-width: 960px; margin: 0 auto; background: var(--c-surface); border-radius: var(--r-xl); overflow: hidden; box-shadow: 0 1px 3px var(--c-shadow), 0 8px 32px rgba(26,23,20,0.08); }
 .header { background: linear-gradient(180deg, #FFFCF9 0%, #FFFFFF 100%); border-bottom: 1.5px solid var(--c-border); padding: 20px 28px 0; }
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-.brand { display: flex; align-items: center; gap: 14px; }
-.brand-logo { width: 64px; height: 64px; border-radius: var(--r-md); background: #fff; padding: 2px; border: 1px solid var(--c-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
-.brand-info h1 { font-size: 15px; font-weight: 600; line-height: 1.3; }
-.brand-info p { font-size: 12px; color: var(--c-text2); margin-top: 1px; }
+.brand { display: flex; align-items: center; gap: 16px; }
+.brand-logo { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+.brand-logo img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.5); }
+.brand-info h1 { font-size: 17px; font-weight: 600; line-height: 1.3; }
+.brand-info p { font-size: 12px; color: var(--c-text2); margin-top: 2px; }
 .auth-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .auth-badge { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid var(--c-border); background: var(--c-surface2); color: var(--c-text2); }
 .auth-badge.signed-in { background: var(--c-green-lt); border-color: #A8D4B8; color: var(--c-green); }
@@ -158,6 +158,7 @@ textarea { min-height: 80px; resize: vertical; }
   .nav-tab span { display: none; }
   .header-top { flex-direction: column; align-items: stretch; }
   .bar-lbl { width: 120px; font-size: 11px; }
+  .brand-logo { width: 70px; height: 70px; }
 }
 </style>
 </head>
@@ -168,7 +169,7 @@ textarea { min-height: 80px; resize: vertical; }
     <div class="header-top">
       <div class="brand">
         <div class="brand-logo">
-         <img src="https://drive.google.com/thumbnail?id=1pohaoI0077dudh4HHKn8GV8UysReu8sR&sz=w400" alt="UiTM Logo">
+         <img src="https://drive.google.com/thumbnail?id=1pohaoI0077dudh4HHKn8GV8UysReu8sR&sz=w800" alt="UiTM Logo">
         </div>
         <div class="brand-info">
           <h1>Sistem Pengurusan Audit Kualiti</h1>
@@ -391,7 +392,7 @@ textarea { min-height: 80px; resize: vertical; }
 
   <div class="portal-footer">
     <span>© 2026 <span class="footer-brand">UiTM Kampus Segamat</span> · Unit Kualiti</span>
-    <span>Portal Audit v2.2</span>
+    <span>Portal Audit v2.3</span>
   </div>
 </div>
 
@@ -418,11 +419,9 @@ function showPage(id, tabIdx) {
 }
 
 window.onload = function() {
-  // Default: tunjuk lock screen, sembunyi nav & content
   document.getElementById('lockScreen').style.display = '';
   document.getElementById('contentWrap').classList.add('hidden');
   document.getElementById('mainNav').classList.add('hidden');
-  
   const today = new Date().toISOString().split('T')[0];
   const df = document.getElementById('f-tarikh');
   if (df) df.value = today;
@@ -490,12 +489,9 @@ function setUser(user) {
   document.getElementById('authLabel').textContent = user.email;
   document.getElementById('btnSignIn').style.display = 'none';
   document.getElementById('btnSignOut').style.display = '';
-  
-  // Sembunyi lock screen, tunjuk content & nav
   document.getElementById('lockScreen').style.display = 'none';
   document.getElementById('contentWrap').classList.remove('hidden');
   document.getElementById('mainNav').classList.remove('hidden');
-  
   const emailField = document.getElementById('f-emel');
   if (emailField) emailField.value = user.email;
   const namaField = document.getElementById('f-nama');
@@ -509,12 +505,9 @@ function signOut() {
   document.getElementById('authLabel').textContent = 'Tidak log masuk';
   document.getElementById('btnSignIn').style.display = '';
   document.getElementById('btnSignOut').style.display = 'none';
-  
-  // Tunjuk lock screen balik, sembunyi content & nav
   document.getElementById('lockScreen').style.display = '';
   document.getElementById('contentWrap').classList.add('hidden');
   document.getElementById('mainNav').classList.add('hidden');
-  
   if (typeof google !== 'undefined' && google.accounts) {
     google.accounts.id.disableAutoSelect();
   }
@@ -651,24 +644,19 @@ async function submitAudit() {
     else el.style.borderColor = '';
   });
   if (!valid) { alert('Sila lengkapkan medan bertanda (*)'); return; }
-
   const pdfFile = document.getElementById('pdfInput').files[0];
   if (!pdfFile) { alert('Sila muat naik PDF'); return; }
-
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Menghantar...';
   hideMessages();
-
   const pw = document.getElementById('progressWrap');
   pw.classList.add('show');
   setProgress(20, 'Menyediakan data...');
-
   try {
     const base64 = await fileToBase64(pdfFile);
     setProgress(40, 'Memuat naik PDF...');
     updateStep(2);
-
     const formData = {
       nama: document.getElementById('f-nama').value.trim(),
       nokp: document.getElementById('f-nokp').value.trim(),
@@ -685,17 +673,14 @@ async function submitAudit() {
       pdfBase64: base64,
       year: CONFIG.YEAR
     };
-
     setProgress(60, 'Menyimpan rekod...');
     const result = await callScriptPost('submitAudit', formData);
     setProgress(100, 'Selesai!');
     updateStep(3);
-
     setTimeout(() => pw.classList.remove('show'), 800);
     document.getElementById('msgSuccessDesc').textContent = `No. Rujukan: ${result.refNo} ✓`;
     document.getElementById('msgSuccess').classList.add('show');
     document.getElementById('msgSuccess').scrollIntoView({ behavior: 'smooth' });
-
     document.getElementById('auditForm').reset();
     document.getElementById('f-emel').value = currentUser.email;
     document.getElementById('f-nama').value = currentUser.name || '';
@@ -707,7 +692,6 @@ async function submitAudit() {
     document.getElementById('msgErrorDesc').textContent = err.message || 'Ralat tidak diketahui';
     document.getElementById('msgError').classList.add('show');
   }
-
   btn.disabled = false;
   btn.innerHTML = '<i class="ti ti-send"></i> Hantar Audit';
 }
