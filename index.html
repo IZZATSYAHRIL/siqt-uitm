@@ -576,7 +576,7 @@ function updateDarkToggleIcon(){var t=document.documentElement.getAttribute('dat
 window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(!localStorage.getItem('siqt-theme'))updateDarkToggleIcon();});
 
 /* ══ AUTH ════════════════════════════════════════════════ */
-function signIn(){google.accounts.id.initialize({client_id:'YOUR_GOOGLE_CLIENT_ID',callback:handleCredential,hosted_domain:'uitm.edu.my'});google.accounts.id.prompt();}
+function signIn(){google.accounts.id.initialize({client_id:'488159901582-kr8c7el481k27380vgk02nfdk4deqip2.apps.googleusercontent.com',callback:handleCredential,hosted_domain:'uitm.edu.my'});google.accounts.id.prompt();}
 function handleCredential(r){var p=JSON.parse(atob(r.credential.split('.')[1]));onUserReady(p.email,p.name);}
 function onUserReady(email,displayName){
   google.script.run.withSuccessHandler(function(user){
